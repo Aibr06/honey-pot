@@ -1,9 +1,25 @@
-import socket 
-import datetime 
+import socket   # lets your program talk to other computers using IP addresses and ports
+import datetime # helps you get the current date and time
 
-host = "0.0.0.0" #listen on all interfaces (your comuter's IP)
-port = 2222 #Fake SSH port (real SSH uses 22)
+# Set the IP and port for the honeypot
+Host = "0.0.0.0"         # listen on all IP addresses (your computer and network)
+port = 2222              # fake SSH port (real SSH is usually 22)
 
-# create a socket (like a phone)
+# Create the server socket (like a fake door waiting for visitors)
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((host, port)) # Assign the socket to IP and port
+server_socket.bind((Host, port))   # attach the honeypot to the chosen IP and port
+server_socket.listen(5)            # allow up to 5 people to "knock" at once
+
+# Let you know the honeypot is running
+print(f"[+] Honeypot is listening on {Host}:{port}")
+
+try:
+    while True:  # run forever unless you stop it with Ctrl+C
+        client_socket, addr = server_socket.accept()  # accept a connection from someone
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # get the time
+        print(f"[!] connection attempt from {addr[0]} at {now}")     # show who tried to connect and when
+        client_socket.send(b'SSH-2.0-OpenSSH_7.4\r\n')  # send a fake SSH version message
+        client_socket.close()  # close the connection (they can't really log in)
+except KeyboardInterrupt:
+    print("\n[!] Shutting down honeypot.")  # show message when you stop it
+    server_socket.close()  # close the honeypot properl  z
