@@ -1,0 +1,9 @@
+import socket 
+import datetime 
+
+host = "0.0.0.0" #listen on all interfaces (your comuter's IP)
+port = 2222 #Fake SSH port (real SSH uses 22)
+
+# create a socket (like a phone)
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((host, port)) # Assign the socket to IP and port
